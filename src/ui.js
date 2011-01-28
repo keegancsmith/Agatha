@@ -1,20 +1,20 @@
 
-function click(state){
+function click(e){
     var pos = getCursorPosition(e);
     var x = pos.x;
     var y = pos.y;
-    var p = get_planet(planets,x,y);
-    if (state.active_planet != null){
+    var p = get_planet(game_state.planets,x,y);
+    if (game_state.active_planet != null){
         if (p){
             // XXX battle() must check the distance
-            battle(state.active_planet , p);
+            battle(game_state.active_planet , p);
         }
         else{
-            state.active_planet = null;
+            game_state.active_planet = null;
         }
     }
     else{
-        state.active_planet = p;
+        game_state.active_planet = p;
     }
 
 }
@@ -25,9 +25,11 @@ function get_planet(planets,x,y){
         var plan = planets[i];
         var radius = plan.radius;
         var dist = $V([x,y])
-        if (dist.minus(plan.pos).modulus() < radius){
+        if (dist.subtract( plan.position ).modulus() < radius){
+            console.log('Found a planet');
             return plan;
         }
     }
+            console.log('Not a planet');
     return null;
 }

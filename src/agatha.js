@@ -30,7 +30,8 @@ function battle(fromplan,toplan){
     //
     //
     // XXX integer division PROBLEM??????
-    if (toplan.can_click){
+    var d =  fromplan.position.distanceFrom(toplan.position);
+    if (d < 50){
         if (toplan.player != null){ // planet is occupied
             if (fromplan.ntroops/2 >= toplan.ntroops){ // win
                 fromplan.ntroops/=2;
@@ -89,6 +90,13 @@ function game_loop() {
 
     for (i = 0; i < game_state.planets.length; i++) {
         var p = game_state.planets[i];
+
+        if (p == game_state.active_planet){
+            ctx.fillStyle = 'rgba(255,128,128,0.5)';
+        }
+         else{
+            ctx.fillStyle = 'rgba(128,128,128,0.5)';
+        }
         ctx.beginPath();
         ctx.arc(p.position.e(1), p.position.e(2), p.radius, 0, Math.PI*2, false);
         ctx.fill();
@@ -99,6 +107,10 @@ function game_loop() {
 function init(nplanets) {
     canvas = document.getElementById('canvas');
     ctx = canvas.getContext('2d');
+
+
+    var supportsTouch = 'createTouch' in document;
+    canvas[supportsTouch ? 'ontouchstart' : 'onmousedown'] = click;
 
     var planets = new Array();
     for (var i = 0; i < nplanets; i++)
