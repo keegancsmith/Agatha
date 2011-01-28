@@ -34,32 +34,29 @@ function can_battle(from_planet, to_planet) {
 
 
 function battle(fromplan, toplan){
-    // XXX alternate discuss
-    //
-    //
-    // XXX integer division PROBLEM??????
     if (!can_battle(fromplan, toplan)) {
         console.log('That planet is too far to click');
         return;
     }
 
-    if (toplan.player != null){ // planet is occupied
-        if (fromplan.ntroops/2 >= toplan.ntroops){ // win
-            fromplan.ntroops/=2;
-            toplan.ntroops+= fromplan.ntroops;
+    var troops_sending = Math.floor(fromplan.ntroops / 2);
+    var troops_staying = fromplan.ntroops - troops_sending;
+
+    fromplan.ntroops = troops_staying;
+
+    if (toplan.player != null && toplan.player != fromplan.player){ // planet is occupied
+        toplan.ntroops -= troops_sending;
+
+        if (toplan.ntroops == 0) {
+            toplan.player = null;
+        } else if (toplan.ntroops < 0) {
             toplan.player = fromplan.player;
+            toplan.ntroops *= -1;
         }
-        else{                                       // loose
-            fromplan.ntroops/=2;
-
-        }
-
     }
-    else{ // planet is not occupied                 win by default
-        fromplan.ntroops/=2;
-        toplan.ntroops+= fromplan.ntroops;
+    else { // planet is not occupied win by default
+        toplan.ntroops += troops_sending;
         toplan.player = fromplan.player;
-
     }
 }
 
@@ -101,7 +98,7 @@ function game_loop() {
         if (p == game_state.active_planet){
             ctx.fillStyle = 'rgba(255,128,128,0.5)';
         } else if (game_state.active_planet && can_battle(game_state.active_planet, p)) {
-            ctx.fillStyle = 'rgba(0,128,128,0.5)';   
+            ctx.fillStyle = 'rgba(0,128,128,0.5)';
         } else {
             ctx.fillStyle = 'rgba(128,128,128,0.5)';
         }
