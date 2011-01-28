@@ -25,6 +25,37 @@ function getCursorPosition(e) {
     };
 }
 
+function battle(fromplan,toplan){
+    // XXX alternate discuss
+    //
+    //
+    // XXX integer division PROBLEM??????
+    if (toplan.can_click){
+        if (toplan.player != null){ // planet is occupied
+            if (fromplan.ntroops/2 >= toplan.ntroops){ // win
+                fromplan.ntroops/=2;
+                toplan.ntroops+= fromplan.ntroops;
+                toplan.player = fromplan.player;
+            }
+            else{                                       // loose
+                fromplan.ntroops/=2;
+                
+            }
+
+        }
+        else{ // planet is not occupied                 win by default
+            fromplan.ntroops/=2;
+            toplan.ntroops+= fromplan.ntroops;
+            toplan.player = fromplan.player;
+
+        }
+
+    }
+    else{    // cant attack
+        console.log('That planet is too far to click');
+    }
+}
+
 
 function init() {
     canvas = document.getElementById('canvas');
