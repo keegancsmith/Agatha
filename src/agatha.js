@@ -87,7 +87,7 @@ function game_loop() {
     ctx.globalCompositeOperation = 'source-in';
     ctx.fillStyle = 'rgba(128,128,128,0.85)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    col = ['rgba(128,128,255,0.5)','ASJKDAKJSDH'];
+    col = ['rgba(128,128,255,0.5)','rgba(128,255,128,0.5)'];
 
     // dot drawing style
     ctx.globalCompositeOperation = 'lighter';
@@ -129,6 +129,7 @@ function init(nplanets) {
         planets.push(generate_planet());
 
     planets[0].player = 0;
+    planets[1].player = 1;
 
     game_state = {
         planets : planets,
