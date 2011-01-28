@@ -25,35 +25,41 @@ function getCursorPosition(e) {
     };
 }
 
-function battle(fromplan,toplan){
+
+function can_battle(from_planet, to_planet) {
+    var d = from_planet.position.distanceFrom(to_planet.position)
+        - from_planet.radius - to_planet.radius;
+    return d < from_planet.travel_radius;
+}
+
+
+function battle(fromplan, toplan){
     // XXX alternate discuss
     //
     //
     // XXX integer division PROBLEM??????
-    var d =  fromplan.position.distanceFrom(toplan.position);
-    if (d < 50){
-        if (toplan.player != null){ // planet is occupied
-            if (fromplan.ntroops/2 >= toplan.ntroops){ // win
-                fromplan.ntroops/=2;
-                toplan.ntroops+= fromplan.ntroops;
-                toplan.player = fromplan.player;
-            }
-            else{                                       // loose
-                fromplan.ntroops/=2;
-                
-            }
+    if (!can_battle(fromplan, toplan)) {
+        console.log('That planet is too far to click');
+        return;
+    }
 
-        }
-        else{ // planet is not occupied                 win by default
+    if (toplan.player != null){ // planet is occupied
+        if (fromplan.ntroops/2 >= toplan.ntroops){ // win
             fromplan.ntroops/=2;
             toplan.ntroops+= fromplan.ntroops;
             toplan.player = fromplan.player;
+        }
+        else{                                       // loose
+            fromplan.ntroops/=2;
 
         }
 
     }
-    else{    // cant attack
-        console.log('That planet is too far to click');
+    else{ // planet is not occupied                 win by default
+        fromplan.ntroops/=2;
+        toplan.ntroops+= fromplan.ntroops;
+        toplan.player = fromplan.player;
+
     }
 }
 
@@ -61,17 +67,18 @@ function battle(fromplan,toplan){
 function generate_planet() {
     var r = Math.random() * 7.5 + 7.5;
     return {
-        position  : $V([Math.random() * canvas.width, Math.random() * canvas.height]),
-        velocity  : Vector.Zero(2),
-        mass      : r / 13,
+        position      : $V([Math.random() * canvas.width, Math.random() * canvas.height]),
+        velocity      : Vector.Zero(2),
+        mass          : r / 13,
 
-        type      : 'normal',
-        health    : 100,
-        radius    : r,
-        activated : false,
+        type          : 'normal',
+        health        : 100,
+        radius        : r,
+        travel_radius : r * 5,
+        activated     : false,
 
-        player    : null,
-        nunits    : 0
+        player        : null,
+        nunits        : 0
     };
 }
 
@@ -93,8 +100,9 @@ function game_loop() {
 
         if (p == game_state.active_planet){
             ctx.fillStyle = 'rgba(255,128,128,0.5)';
-        }
-         else{
+        } else if (game_state.active_planet && can_battle(game_state.active_planet, p)) {
+            ctx.fillStyle = 'rgba(0,128,128,0.5)';   
+        } else {
             ctx.fillStyle = 'rgba(128,128,128,0.5)';
         }
         ctx.beginPath();
