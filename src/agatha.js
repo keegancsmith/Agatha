@@ -27,6 +27,9 @@ function getCursorPosition(e) {
 
 
 function can_battle(from_planet, to_planet) {
+    if (from_planet == to_planet)
+        return false;
+
     var d = from_planet.position.distanceFrom(to_planet.position)
         - from_planet.radius - to_planet.radius;
     return d < from_planet.travel_radius;
@@ -39,10 +42,15 @@ function battle(fromplan, toplan){
         return;
     }
 
-    var troops_sending = Math.floor(fromplan.ntroops / 2);
-    var troops_staying = fromplan.ntroops - troops_sending;
+    var troops_staying = Math.floor(fromplan.ntroops / 2);
+    var troops_sending = fromplan.ntroops - troops_staying;
 
     fromplan.ntroops = troops_staying;
+
+    if (troops_sending == 0) {
+        console.log('no troops to send');
+        return;
+    }
 
     if (toplan.player != null && toplan.player != fromplan.player){ // planet is occupied
         toplan.ntroops -= troops_sending;
@@ -58,6 +66,8 @@ function battle(fromplan, toplan){
         toplan.ntroops += troops_sending;
         toplan.player = fromplan.player;
     }
+
+    console.log(fromplan.ntroops, toplan.ntroops);
 }
 
 
@@ -75,7 +85,7 @@ function generate_planet() {
         activated     : false,
 
         player        : null,
-        nunits        : 0
+        ntroops       : 0
     };
 }
 
@@ -130,6 +140,9 @@ function init(nplanets) {
 
     planets[0].player = 0;
     planets[1].player = 1;
+
+    planets[0].ntroops = 10;
+    planets[1].ntroops = 4;
 
     game_state = {
         planets : planets,
