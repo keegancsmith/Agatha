@@ -4,7 +4,8 @@ function click(e){
     var x = pos.x;
     var y = pos.y;
     var p = get_planet(game_state.planets,x,y);
-    if (game_state.active_planet != null){
+
+    if (game_state.active_planet != null){ // attack a planet
         if (p){
             // XXX battle() must check the distance
             battle(game_state.active_planet , p);
@@ -13,8 +14,20 @@ function click(e){
             game_state.active_planet = null;
         }
     }
-    else{
-        game_state.active_planet = p;
+    else{ // select a planet
+        if (p == null){
+            console.log('Cant select empty space');
+            return;
+        }
+        if (p.player == null){ // No player,  invalid move
+            console.log('You cant select an empty planet');
+        }
+        else if (p.player != game_state.player){ // enemy player, invalid move
+            console.log('You cant select an enemy');
+        }
+        else if (p.player == game_state.human_player){ // good move
+            game_state.active_planet = p;
+        }
     }
 
 }
@@ -26,10 +39,10 @@ function get_planet(planets,x,y){
         var radius = plan.radius;
         var dist = $V([x,y])
         if (dist.subtract( plan.position ).modulus() < radius){
-            console.log('Found a planet');
+            console.log('Planet clicked');
             return plan;
         }
     }
-            console.log('Not a planet');
+            console.log('Space clicked');
     return null;
 }

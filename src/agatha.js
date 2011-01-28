@@ -116,7 +116,6 @@ function init(nplanets) {
     canvas = document.getElementById('canvas');
     ctx = canvas.getContext('2d');
 
-
     var supportsTouch = 'createTouch' in document;
     canvas[supportsTouch ? 'ontouchstart' : 'onmousedown'] = click;
 
@@ -124,10 +123,13 @@ function init(nplanets) {
     for (var i = 0; i < nplanets; i++)
         planets.push(generate_planet());
 
+    planets[0].player = 0;
+
     game_state = {
         planets : planets,
         players : [{}],
-        active_planet : null
+        active_planet : null,
+        human_player : 0
     };
 
     setInterval(game_loop, 40);
