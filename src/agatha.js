@@ -1,6 +1,6 @@
 var canvas;
 var ctx;
-var points = [];
+var game_state;
 
 function getCursorPosition(e) {
     var x;
@@ -57,37 +57,58 @@ function battle(fromplan,toplan){
 }
 
 
-function init() {
+function generate_planet() {
+    var r = Math.random() * 7.5 + 7.5;
+    return {
+        position  : $V([Math.random() * canvas.width, Math.random() * canvas.height]),
+        velocity  : Vector.Zero(2),
+        mass      : r / 13,
+
+        type      : 'normal',
+        health    : 100,
+        radius    : r,
+        activated : false,
+
+        player    : null,
+        nunits    : 0
+    };
+}
+
+
+function game_loop() {
+    physics_step(game_state.planets, 1000/40.0 * 0.1);
+
+    // fading
+    ctx.globalCompositeOperation = 'source-in';
+    ctx.fillStyle = 'rgba(128,128,128,0.85)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // dot drawing style
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.fillStyle = 'rgba(128,128,128,0.5)';
+
+    for (i = 0; i < game_state.planets.length; i++) {
+        var p = game_state.planets[i];
+        ctx.beginPath();
+        ctx.arc(p.position.e(1), p.position.e(2), p.radius, 0, Math.PI*2, false);
+        ctx.fill();
+    }
+}
+
+
+function init(nplanets) {
     canvas = document.getElementById('canvas');
     ctx = canvas.getContext('2d');
 
     var planets = new Array();
-    for (var i = 0; i < 30; i++) {
-        var planet = {
-            mass     : 1,
-            position : $V([Math.random() * canvas.width, Math.random() * canvas.height]),
-            velocity : Vector.Zero(2)
-        };
-        planets.push(planet);
-    }
+    for (var i = 0; i < nplanets; i++)
+        planets.push(generate_planet());
 
-    setInterval(function() {
-                    physics_step(planets, 1000/40.0 * 0.1);
+    game_state = {
+        planets : planets,
+        players : [{}],
+        active_planet : null
+    };
 
-                    // fading
-                    ctx.globalCompositeOperation = 'source-in';
-                    ctx.fillStyle = 'rgba(128,128,128,0.85)';
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                    // dot drawing style
-                    ctx.globalCompositeOperation = 'lighter';
-                    ctx.fillStyle = 'rgba(128,128,128,0.5)';
-
-                    for (i = 0; i < planets.length; i++) {
-                        var planet = planets[i];
-                        ctx.beginPath();
-                        ctx.arc(planet.position.e(1), planet.position.e(2), 7.5, 0, Math.PI*2, false);
-                        ctx.fill();
-                    }
-                }, 40);
+    setInterval(game_loop, 40);
 }
