@@ -87,6 +87,7 @@ function game_loop() {
     ctx.globalCompositeOperation = 'source-in';
     ctx.fillStyle = 'rgba(128,128,128,0.85)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+    col = ['rgba(128,128,255,0.5)','ASJKDAKJSDH'];
 
     // dot drawing style
     ctx.globalCompositeOperation = 'lighter';
@@ -94,6 +95,13 @@ function game_loop() {
 
     for (i = 0; i < game_state.planets.length; i++) {
         var p = game_state.planets[i];
+
+        if (p.player != null){
+            ctx.fillStyle = col[p.player];
+            ctx.beginPath();
+            ctx.arc(p.position.e(1), p.position.e(2), p.radius*1.5, 0, Math.PI*2, false);
+            ctx.fill();
+        }
 
         if (p == game_state.active_planet){
             ctx.fillStyle = 'rgba(255,128,128,0.5)';

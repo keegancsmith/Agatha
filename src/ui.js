@@ -22,7 +22,7 @@ function click(e){
         if (p.player == null){ // No player,  invalid move
             console.log('You cant select an empty planet');
         }
-        else if (p.player != game_state.player){ // enemy player, invalid move
+        else if (p.player != game_state.human_player){ // enemy player, invalid move
             console.log('You cant select an enemy');
         }
         else if (p.player == game_state.human_player){ // good move
