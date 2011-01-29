@@ -228,6 +228,11 @@ function draw_planet(p) {
 
     if (p == game_state.active_planet){
         ctx.fillStyle = 'rgba(255,128,128,0.5)';
+        ctx.beginPath();
+        ctx.arc(p.position.e(1),p.position.e(2), p.travel_radius + p.radius, 0, 2*Math.PI, false);
+        ctx.stroke();
+
+        // colour the path
     } else if (game_state.active_planet && can_battle(game_state.active_planet, p)) {
         ctx.fillStyle = 'rgba(0,128,128,0.5)';
         ctx.moveTo(p.position.e(1),p.position.e(2));
@@ -298,7 +303,7 @@ function game_loop() {
 
     // fading
     ctx.globalCompositeOperation = 'source-in';
-    ctx.fillStyle = 'rgba(0,0,0,0.95)';
+    ctx.fillStyle = 'rgba(0,0,0,0.85)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // dot drawing style
