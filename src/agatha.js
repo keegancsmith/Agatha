@@ -157,7 +157,7 @@ function generate_planet() {
 function generate_players() {
     return [{
                 name     : 'Agatha',
-                colour   : 'rgba(128,128,255,0.5)'
+                colour   : 'rgba(128,128,255,1.)'
             },
             {
                 name     : 'Bertha',
@@ -207,18 +207,20 @@ function draw_animations() {
 
 
 function draw_planet(p) {
-    if (p.player != null) {
+
+    // Draw Aura
+    if (p.player != null) { 
         ctx.fillStyle = p.player.colour;
         ctx.beginPath();
         var k = 0;
         if (p == game_state.active_planet){
-            k=5;
+            k=0;
         }
         var tx= p.position.e(1);
         var ty= p.position.e(2);
 
         ctx.arc(p.position.e(1), p.position.e(2),
-                p.radius + 5 + k*Math.sin(game_state.aura_pulse),
+                p.radius + p.ntroops +1+ k*Math.sin(game_state.aura_pulse),
                 0, Math.PI*2, false);
         game_state.aura_pulse+=0.1;
         ctx.fill();
@@ -240,9 +242,11 @@ function draw_planet(p) {
     } else {
         ctx.fillStyle = 'rgba(128,128,128,0.5)';
     }
-    ctx.beginPath();
+  /*  ctx.beginPath();
     ctx.arc(p.position.e(1), p.position.e(2), p.radius, 0, Math.PI*2, false);
-    ctx.fill();
+    ctx.fill();*/
+    var offset = Math.floor ( Math.sqrt ( 2 * p.radius * p.radius) );
+    ctx.drawImage(plan_image, p.position.e(1)-p.radius , p.position.e(2) - p.radius ,2*p.radius,2*p.radius);
 
     if (p.player != null) {
         ctx.fillText(Math.floor(p.ntroops), p.position.e(1), p.position.e(2));
@@ -300,12 +304,12 @@ function game_loop() {
     ctx.textBaseline = 'middle';
 
     // fading
-    ctx.globalCompositeOperation = 'source-in';
-    ctx.fillStyle = 'rgba(0,0,0,0.85)';
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = 'rgba(0,0,0,1)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // dot drawing style
-    ctx.globalCompositeOperation = 'lighter';
+    ctx.globalCompositeOperation = 'source-over';
     ctx.fillStyle = 'rgba(128,128,128,0.5)';
 
     // Draw scene
@@ -351,6 +355,9 @@ function init(nplanets) {
 
     planets[2].player  = players[2];
     planets[2].ntroops = 8;
+
+    plan_image = new Image();
+    plan_image.src = "images/planet3.png";
 
     game_state = {
         planets : planets,
