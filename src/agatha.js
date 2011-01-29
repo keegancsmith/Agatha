@@ -138,7 +138,7 @@ function ai_target_weak(player) {
 
 
 function generate_planet() {
-    var r = Math.random() * 7.5 + 7.5;
+    var r = Math.random() * 7.5 + 15;
     return {
         position      : $V([Math.random() * canvas.width, Math.random() * canvas.height]),
         velocity      : Vector.Zero(2),
@@ -166,7 +166,7 @@ function generate_players() {
                 colour   : 'rgba(128,255,128,0.5)',
                 ai       : {
                     count        : 0,
-                    count_thresh : 75,
+                    count_thresh : 800,
                     func         : ai_target_weak
                 }
             },
