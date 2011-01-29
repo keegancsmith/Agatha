@@ -63,7 +63,7 @@ function get_planet(planets,x,y){
         var radius = plan.radius;
         var dist = $V([x,y]);
         if (dist.subtract( plan.position ).modulus() < radius){
-            console.log('Planet clicked', plan.ntroops);
+            console.log('Planet clicked', plan);
             return plan;
         }
     }
