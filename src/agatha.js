@@ -2,28 +2,6 @@ var canvas;
 var ctx;
 var game_state;
 
-function getCursorPosition(e) {
-    var x;
-    var y;
-
-    if (e.touches != undefined && e.touches.length == 1)
-        e = e.touches[0];
-
-    if (e.pageX != undefined && e.pageY != undefined) {
-        x = e.pageX;
-        y = e.pageY;
-    } else {
-        x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
-        y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
-    }
-    x -= canvas.offsetLeft;
-    y -= canvas.offsetTop;
-
-    return {
-        'x' : x,
-        'y' : y
-    };
-}
 
 
 function can_battle(from_planet, to_planet) {
@@ -69,7 +47,7 @@ function generate_planet() {
         mass          : r / 13,
 
         type          : 'normal',
-        health        : 100,
+        health        : 100*r,
         radius        : r,
         travel_radius : r * 5,
         activated     : false,
@@ -79,9 +57,19 @@ function generate_planet() {
     };
 }
 
+function update_health(){
+    var planets = game_state.planets;
+    for (i = 0;i < planets.length;i++){
+        var p = planets[i];
+        if (p.player != null){
+            p.health-=0.001*p.numtroops;
+        }
+    }
+}
 
 function game_loop() {
     physics_step(game_state.planets, 1000/40.0 * 0.1);
+    update_health();
 
     // fading
     ctx.globalCompositeOperation = 'source-in';
@@ -99,7 +87,12 @@ function game_loop() {
         if (p.player != null){
             ctx.fillStyle = col[p.player];
             ctx.beginPath();
-            ctx.arc(p.position.e(1), p.position.e(2), p.radius*1.5, 0, Math.PI*2, false);
+            var k = 0;
+            if (p == game_state.active_planet){
+                k=5;
+            }
+            ctx.arc(p.position.e(1), p.position.e(2), p.radius*1.5 + k*Math.sin(game_state.aura_pulse), 0, Math.PI*2, false);
+            game_state.aura_pulse+=0.1;
             ctx.fill();
         }
 
@@ -135,7 +128,8 @@ function init(nplanets) {
         planets : planets,
         players : [{}],
         active_planet : null,
-        human_player : 0
+        human_player : 0 ,
+        aura_pulse : 0
     };
 
     setInterval(game_loop, 40);

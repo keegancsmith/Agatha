@@ -1,4 +1,26 @@
 
+function getCursorPosition(e) {
+    var x;
+    var y;
+
+    if (e.touches != undefined && e.touches.length == 1)
+        e = e.touches[0];
+
+    if (e.pageX != undefined && e.pageY != undefined) {
+        x = e.pageX;
+        y = e.pageY;
+    } else {
+        x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+        y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+    }
+    x -= canvas.offsetLeft;
+    y -= canvas.offsetTop;
+
+    return {
+        'x' : x,
+        'y' : y
+    };
+}
 function click(e){
     var pos = getCursorPosition(e);
     var x = pos.x;
@@ -31,6 +53,8 @@ function click(e){
     }
 
 }
+
+
 
 // XXX only returns first planet which is close
 function get_planet(planets,x,y){
