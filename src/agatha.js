@@ -1,7 +1,7 @@
 var canvas;
 var ctx;
 var game_state;
-
+var counter;
 
 
 function can_battle(from_planet, to_planet) {
@@ -21,7 +21,7 @@ function battle(fromplan, toplan){
     }
 
     var troops_staying = Math.floor(fromplan.ntroops / 2);
-    var troops_sending = fromplan.ntroops - troops_staying;
+    var troops_sending = Math.floor(fromplan.ntroops - troops_staying);
 
     fromplan.ntroops = troops_staying;
 
@@ -56,39 +56,30 @@ function random_ai(player){
     var bases = new Array();
     var targets = new Array();
     var planets = game_state.planets;
-    for (i =0;i < planets.length;i++){
+    for (var i =0;i < planets.length;i++){
         if (planets[i].player == player){
             bases.push(planets[i]);
         }
     }
     //console.log('BASES:' + bases);
 
-    for (j=0;j < bases.length;j++){
-        for (k =0;k < planets.length;k++){
+    for (var j=0;j < bases.length;j++){
+        for (var k =0;k < planets.length;k++){
             if (bases[j] == planets[k]){
-                continue
+                continue;
             }
 
             if (can_battle(bases[j],planets[k])){
-                var atk = new Array();
-                atk.push(j);
-                atk.push(k);
                 targets.push([j,k]);
             }
         }
     }
     if (targets.length == 0)
         return;
-   // console.log('Targets:' + targets[0][0]);
-    var choice2 =  Math.floor(Math.random*targets.length);
-    console.log(choice2);
-    choice=choice2;
-    var choice =0;
-    //console.log(targets);
-    var attack_choice = targets[choice];
-    battle(bases[attack_choice[0]],planets[attack_choice[1]]);
-    
 
+    // Choose who to attack randomnly
+    var attack_choice = targets[Math.floor(Math.random()*targets.length)];
+    battle(bases[attack_choice[0]],planets[attack_choice[1]]);
 }
 
 
