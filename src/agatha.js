@@ -1,6 +1,7 @@
 var canvas;
 var ctx;
 var game_state;
+var plan_image;
 
 
 function battle_animation(from_planet, to_planet) {
@@ -157,14 +158,14 @@ function generate_planet() {
 function generate_players() {
     return [{
                 name     : 'Agatha',
-                colour   : 'rgba(128,128,255,1.)'
+                colour   : 'rgba(128,128,255,0.5)'
             },
             {
                 name     : 'Bertha',
                 colour   : 'rgba(128,255,128,0.5)',
                 ai       : {
                     count        : 0,
-                    count_thresh : 75,
+                    count_thresh : 250,
                     func         : ai_target_weak
                 }
             },
@@ -173,7 +174,7 @@ function generate_players() {
                 colour   : 'rgba(255,128,128,0.5)',
                 ai       : {
                     count        : 0,
-                    count_thresh : 100,
+                    count_thresh : 200,
                     func         : ai_target_weak
                 }
             }];
@@ -303,9 +304,13 @@ function game_loop() {
     ctx.textAlign    = 'center';
     ctx.textBaseline = 'middle';
 
-    // fading
+    // redraw
+    var grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height / 2);
+    grad.addColorStop(0, "black");
+    grad.addColorStop(0.5, "rgb(15, 15, 15)");
+    grad.addColorStop(1, "black");
     ctx.globalCompositeOperation = 'source-over';
-    ctx.fillStyle = 'rgba(0,0,0,1)';
+    ctx.fillStyle = grad;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // dot drawing style
