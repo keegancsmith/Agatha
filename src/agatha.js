@@ -358,12 +358,9 @@ function game_loop() {
         ctx.restore();
     }
 }
+function startGame(){
 
-
-function init(nplanets) {
-    canvas = document.getElementById('canvas');
-    ctx = canvas.getContext('2d');
-
+    nplanets = 10; // XXX XXX temp
     var supportsTouch = 'createTouch' in document;
     canvas[supportsTouch ? 'ontouchstart' : 'onmousedown'] = click;
 
@@ -394,4 +391,88 @@ function init(nplanets) {
     };
 
     setInterval(game_loop, 40);
+}
+function blah(){
+    var hoff = 30;
+    var ratio = 36/144;
+
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = 'rgba(0,0,0,1)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.drawImage(agatha_image, 150 ,10,300,300*ratio);
+    ctx.drawImage(play_image,230,50+hoff);
+
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.drawImage(guide_image,240,90+hoff);
+    ctx.drawImage(about_image,240,120+ hoff);
+    ctx.drawImage(mars_image,120,200);
+
+    if (home_state.selected){
+        var col_offset;
+        var col_w = 0;
+        if (home_state.selected == 'play'){
+            col_offset=0;
+            col_w=43;
+        }
+        else if (home_state.selected == 'guide') {
+            col_offset=45;
+            col_w=30;
+        }
+        else if (home_state.selected == 'about') {
+            col_offset=70;
+            col_w=38;
+        }
+        ctx.globalCompositeOperation = 'darker';
+        ctx.fillStyle = 'rgba(150,0,0,0.5)';
+        ctx.fillRect(230,80+col_offset, 140, col_w );
+    }
+
+    console.log(home_state.selected);
+}
+
+function init(nplanets) {
+    canvas = document.getElementById('canvas');
+    ctx = canvas.getContext('2d');
+
+    var supportsTouch = 'createTouch' in document;
+    canvas[supportsTouch ? 'ontouchstart' : 'onmousedown'] = homeClick;
+    canvas[supportsTouch ? 'ontouchmove' : 'onmousemove']  = homeMove;
+    start_game = false;
+    
+
+    home_state = {
+        current: 'home', // others, guide, about
+        slected : null};
+
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = 'rgba(0,0,0,1)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+
+    play_image = new Image();
+    guide_image = new Image();
+    about_image = new Image();
+    mars_image = new Image();
+    agatha_image = new Image();
+    
+
+    play_image.src = "images/play.png";
+    guide_image.src = "images/guide.png";
+    about_image.src = "images/about.png";
+    mars_image.src = "images/Mars.jpg";
+    agatha_image.src = "images/agatha.png"
+    
+
+    console.log(play_image);
+    var home_int = setInterval(blah,40);
+    home_state.home_int = home_int;
+
+    //setInterval(home_loop,40);
+
+
+
+
+
+
 }

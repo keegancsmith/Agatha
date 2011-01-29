@@ -76,3 +76,39 @@ function find_closest_planet(planets, x, y){
     else
         return null;
 }
+
+
+//--------------------- Home screen Functions ---------------------------
+
+function homeClick(e){
+    var pos = getCursorPosition(e);
+    if (home_state.current == 'home'){
+        if (home_state.selected == 'play'){
+            clearInterval(home_state.home_int);
+            startGame();
+        }
+
+    }
+    else{
+    }
+}
+function homeMove(e){
+    var pos = getCursorPosition(e);
+    if (pos.x > 230 && pos.x < (230 + 140)){
+        if (pos.y > 80 && pos.y < (80+53)){
+            home_state.selected = 'play';
+        }
+        else if (pos.y > 120 && pos.y < (120+36)){
+            home_state.selected = 'guide';
+        }
+        else if (pos.y > 150 && pos.y < 186){
+            home_state.selected = 'about';
+        }
+        else{
+            home_state.selected = null;
+        }
+    }
+    else{
+            home_state.selected = null;
+    }
+}
