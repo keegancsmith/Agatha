@@ -39,15 +39,11 @@ function do_collision(p1, p2, dt) {
     // Adapted from http://archive.ncsa.illinois.edu/Classes/MATH198/townsend/math.html
     var n = p1.position.subtract(p2.position).toUnitVector();
 
-    var vn1 = n.x(-1 * p1.velocity.dot(n.x(-1)));
-    var vn2 = n.x(p2.velocity.dot(n));
+    var vn1 = p1.velocity.subtract( n.x(2).x(n.dot(p1.velocity)));
+    var vn2 = p2.velocity.subtract( n.x(2).x(n.dot(p2.velocity)));
 
-    var vt1 = vn1.subtract(p1.velocity);
-    var vt2 = vn2.subtract(p2.velocity);
-
-    // ignoring mass
-    p1.velocity = vt1.add(vn2).x(physics_props.collision_mult);
-    p2.velocity = vt2.add(vn1).x(physics_props.collision_mult);
+    p1.velocity=vn1;
+    p2.velocity=vn2;
 
     p1.position = p1.position.add(p1.velocity.multiply(dt));
     p2.position = p2.position.add(p2.velocity.multiply(dt));
