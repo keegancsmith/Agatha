@@ -45,7 +45,45 @@ function battle(fromplan, toplan){
         toplan.player = fromplan.player;
     }
 
-    console.log(fromplan.ntroops, toplan.ntroops);
+    //console.log(fromplan.ntroops, toplan.ntroops);
+}
+
+
+function random_ai(player){
+    var bases = new Array();
+    var targets = new Array();
+    var planets = game_state.planets;
+    for (i =0;i < planets.length;i++){
+        if (planets[i].player == player){
+            bases.push(planets[i]);
+        }
+    }
+    //console.log('BASES:' + bases);
+
+    for (j=0;j < bases.length;j++){
+        for (k =0;k < planets.length;k++){
+            if (bases[j] == planets[k]){
+                continue
+            }
+
+            if (can_battle(bases[j],planets[k])){
+                var atk = new Array();
+                atk.push(j);
+                atk.push(k);
+                targets.push([j,k]);
+            }
+        }
+    }
+    if (targets.length == 0)
+        return;
+   // console.log('Targets:' + targets[0][0]);
+   // var choice =  Math.floor(Math.random*targets.length);
+    var choice =0;
+    //console.log(targets);
+    var attack_choice = targets[choice];
+    battle(bases[attack_choice[0]],planets[attack_choice[1]]);
+    
+
 }
 
 
@@ -67,23 +105,30 @@ function generate_planet() {
     };
 }
 
-function update_health(){
+function update_stats(){
     var planets = game_state.planets;
     for (i = 0;i < planets.length;i++){
         var p = planets[i];
         if (p.player != null){
             p.health-=0.001*p.numtroops;
+            p.ntroops =p.ntroops + 0.01;
         }
     }
 }
 
 function game_loop() {
+    counter+=1;
     physics_step(game_state.planets, 1000/40.0 * 0.1);
-    update_health();
+    update_stats();
+    if (counter > 75){
+
+        random_ai(1);
+        counter=0;
+    }
 
     // fading
     ctx.globalCompositeOperation = 'source-in';
-    ctx.fillStyle = 'rgba(128,128,128,0.85)';
+    ctx.fillStyle = 'rgba(0,0,0,0.85)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     col = ['rgba(128,128,255,0.5)','rgba(128,255,128,0.5)'];
 
@@ -110,12 +155,21 @@ function game_loop() {
             ctx.fillStyle = 'rgba(255,128,128,0.5)';
         } else if (game_state.active_planet && can_battle(game_state.active_planet, p)) {
             ctx.fillStyle = 'rgba(0,128,128,0.5)';
+            ctx.moveTo(p.position.e(1),p.position.e(2));
+            ctx.lineTo(game_state.active_planet.position.e(1),game_state.active_planet.position.e(2));
+            ctx.strokeStyle = "#eee";
+            ctx.stroke();
         } else {
             ctx.fillStyle = 'rgba(128,128,128,0.5)';
         }
         ctx.beginPath();
         ctx.arc(p.position.e(1), p.position.e(2), p.radius, 0, Math.PI*2, false);
         ctx.fill();
+
+//        ctx.font = "bold 12px sans-serif";
+        if (p.player != null){
+            ctx.fillText(Math.floor(p.ntroops), p.position.e(1) - 5, p.position.e(2)+3);
+        }
     }
 }
 
@@ -123,6 +177,7 @@ function game_loop() {
 function init(nplanets) {
     canvas = document.getElementById('canvas');
     ctx = canvas.getContext('2d');
+    counter = 0;
 
     var supportsTouch = 'createTouch' in document;
     canvas[supportsTouch ? 'ontouchstart' : 'onmousedown'] = click;
@@ -144,6 +199,7 @@ function init(nplanets) {
         human_player : 0 ,
         aura_pulse : 0
     };
+
 
     setInterval(game_loop, 40);
 }
