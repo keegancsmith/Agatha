@@ -48,7 +48,10 @@ function battle(fromplan, toplan){
     //console.log(fromplan.ntroops, toplan.ntroops);
 }
 
-
+//
+// Ai strategies to implement:
+//      currently does never give troops to own base;
+//      a good strategy is to do this sometimes to make a planet which is strong enough to kill another really strong planet
 function random_ai(player){
     var bases = new Array();
     var targets = new Array();
@@ -77,7 +80,9 @@ function random_ai(player){
     if (targets.length == 0)
         return;
    // console.log('Targets:' + targets[0][0]);
-   // var choice =  Math.floor(Math.random*targets.length);
+    var choice2 =  Math.floor(Math.random*targets.length);
+    console.log(choice2);
+    choice=choice2;
     var choice =0;
     //console.log(targets);
     var attack_choice = targets[choice];
@@ -123,14 +128,15 @@ function game_loop() {
     if (counter > 75){
 
         random_ai(1);
+        random_ai(2);
         counter=0;
     }
 
     // fading
     ctx.globalCompositeOperation = 'source-in';
-    ctx.fillStyle = 'rgba(0,0,0,0.85)';
+    ctx.fillStyle = 'rgba(0,0,0,0.95)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    col = ['rgba(128,128,255,0.5)','rgba(128,255,128,0.5)'];
+    var col = ['rgba(128,128,255,0.5)','rgba(128,255,128,0.5)','rgba(255,128,128,0.5)'];
 
     // dot drawing style
     ctx.globalCompositeOperation = 'lighter';
@@ -146,7 +152,14 @@ function game_loop() {
             if (p == game_state.active_planet){
                 k=5;
             }
-            ctx.arc(p.position.e(1), p.position.e(2), p.radius*1.5 + k*Math.sin(game_state.aura_pulse), 0, Math.PI*2, false);
+            var tx= p.position.e(1);
+            var ty= p.position.e(2);
+
+           /* var radial = ctx.createRadialGradient(tx,ty,p.radius,tx,ty,p.radius+p.ntroops);
+            radial.addColorStop(0, col[p.player]);
+            radial.addColorStop(1, 'rgba(128,128,128,0.5)');
+            ctx.fillStyle = radial;*/
+            ctx.arc(p.position.e(1), p.position.e(2), p.radius +5 + k*Math.sin(game_state.aura_pulse), 0, Math.PI*2, false);
             game_state.aura_pulse+=0.1;
             ctx.fill();
         }
@@ -191,6 +204,9 @@ function init(nplanets) {
 
     planets[0].ntroops = 10;
     planets[1].ntroops = 4;
+
+    planets[2].player = 2;
+    planets[2].ntroops = 8;
 
     game_state = {
         planets : planets,
