@@ -52,6 +52,7 @@ function do_collision(p1, p2, dt) {
 
 function physics_step(planets, dt) {
     for (var i = 0; i < planets.length; i++) {
+        var r = planets[i].radius;
         var p = planets[i].position;
         var v = planets[i].velocity;
         var a = calculate_acceleration(planets[i], planets);
@@ -66,20 +67,20 @@ function physics_step(planets, dt) {
         var bounce_dampening = physics_props.bounce_dampening;
 
         // bounce
-        if (px < 0) {
-            px = 0;
+        if (px < r) {
+            px = r;
             vx *= bounce_dampening;
         }
-        if (px > canvas.width) {
-            px = canvas.width;
+        if (px > canvas.width - r) {
+            px = canvas.width - r;
             vx *= bounce_dampening;
         }
-        if (py < 0) {
-            py = 0;
+        if (py < r) {
+            py = r;
             vy *= bounce_dampening;
         }
-        if (py > canvas.height) {
-            py = canvas.height;
+        if (py > canvas.height - r) {
+            py = canvas.height - r;
             vy *= bounce_dampening;
         }
 
