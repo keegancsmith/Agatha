@@ -43,6 +43,9 @@ function battle(fromplan, toplan){
         return;
     }
 
+    var p1 = fromplan.player;
+    var p2 = toplan.player;
+
     var troops_staying = Math.floor(fromplan.ntroops / 2);
     var troops_sending = Math.floor(fromplan.ntroops - troops_staying);
 
@@ -68,8 +71,19 @@ function battle(fromplan, toplan){
         toplan.player = fromplan.player;
     }
 
-    game_state.animations.push(battle_animation(fromplan, toplan,fromplan.player.colour));
+    // Do sounds
+    var p = game_state.human_player;
+    if (p == p1 && p != p2 && p == toplan.player) { // Just took over a planet
+        play_sound('getplanet');
+    } else if (p == p2 && p != p1 && p != toplan.player) { // Lost a planet
+        play_sound('loseplanet');
+    } else {
+        play_sound('sendtroops');
+    }
+
+    game_state.animations.push(battle_animation(fromplan, toplan, fromplan.player.colour));
 }
+
 
 function ai_find_targets(player) {
     var targets = [];
@@ -133,6 +147,12 @@ function ai_target_weak(player) {
     battle(smallest[2], smallest[3]);
 
     return true;
+}
+
+
+function play_sound(s) {
+    var snd = new Audio('snd/' + s + '.mp3');
+    snd.play();
 }
 
 
