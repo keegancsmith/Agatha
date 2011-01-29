@@ -165,7 +165,7 @@ function generate_players() {
                 colour   : 'rgba(128,255,128,0.5)',
                 ai       : {
                     count        : 0,
-                    count_thresh : 250,
+                    count_thresh : 40,
                     func         : ai_target_weak
                 }
             },
@@ -174,7 +174,7 @@ function generate_players() {
                 colour   : 'rgba(255,128,128,0.5)',
                 ai       : {
                     count        : 0,
-                    count_thresh : 200,
+                    count_thresh : 40,
                     func         : ai_target_weak
                 }
             }];
@@ -210,7 +210,7 @@ function draw_animations() {
 function draw_planet(p) {
 
     // Draw Aura
-    if (p.player != null) { 
+    if (p.player != null) {
         ctx.fillStyle = p.player.colour;
         ctx.beginPath();
         var k = 0;
@@ -332,8 +332,8 @@ function game_loop() {
 
         // Draw text
         ctx.save();
-        ctx.font         = 'bold 36px sans-serif';
-        ctx.fillStyle    = 'white';
+        ctx.font      = 'bold 36px sans-serif';
+        ctx.fillStyle = 'white';
         ctx.fillText(text, canvas.width / 2, canvas.height / 2);
         ctx.restore();
     }
