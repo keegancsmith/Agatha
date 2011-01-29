@@ -4,7 +4,7 @@ var game_state;
 var plan_image;
 
 
-function battle_animation(from_planet, to_planet) {
+function battle_animation(from_planet, to_planet, colour) {
     var p1      = from_planet;
     var p2      = to_planet;
     var steps   = 10;
@@ -17,7 +17,7 @@ function battle_animation(from_planet, to_planet) {
         var r1 = p1.radius + 10 * (counter / steps);
         var r2 = p2.radius + 10 * (1 - counter / steps);
 
-        ctx.fillStyle = p1.player.colour;//'rgba(0, 255, 0, 0.5)';
+        ctx.fillStyle = colour;//'rgba(0, 255, 0, 0.5)';
         ctx.beginPath();
         ctx.arc(p1.position.e(1), p1.position.e(2), r1, 0, Math.PI*2, false);
         ctx.arc(p2.position.e(1), p2.position.e(2), r2, 0, Math.PI*2, false);
@@ -68,7 +68,7 @@ function battle(fromplan, toplan){
         toplan.player = fromplan.player;
     }
 
-    game_state.animations.push(battle_animation(fromplan, toplan));
+    game_state.animations.push(battle_animation(fromplan, toplan,fromplan.player.colour));
 }
 
 function ai_find_targets(player) {
