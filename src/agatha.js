@@ -70,7 +70,6 @@ function battle(fromplan, toplan){
     game_state.animations.push(battle_animation(fromplan, toplan));
 }
 
-
 function ai_find_targets(player) {
     var targets = [];
     var planets = game_state.planets;
@@ -128,9 +127,8 @@ function ai_target_weak(player) {
     var smallest = target_wrap[0];
     for (i = 1; i < target_wrap.length; i++)
         if (target_wrap[i] < smallest)
-            smallest = target_wrap;
+            smallest = target_wrap[i];
 
-    console.log(smallest);
     battle(smallest[2], smallest[3]);
 
     return true;
@@ -141,7 +139,7 @@ function generate_planet() {
     var r = Math.random() * 7.5 + 15;
     return {
         position      : $V([Math.random() * canvas.width, Math.random() * canvas.height]),
-        velocity      : Vector.Zero(2),
+        velocity      : Vector.Random(2).x(0.75),
         mass          : r / 13,
 
         type          : 'normal',
@@ -166,7 +164,7 @@ function generate_players() {
                 colour   : 'rgba(128,255,128,0.5)',
                 ai       : {
                     count        : 0,
-                    count_thresh : 800,
+                    count_thresh : 75,
                     func         : ai_target_weak
                 }
             },
@@ -175,8 +173,8 @@ function generate_players() {
                 colour   : 'rgba(255,128,128,0.5)',
                 ai       : {
                     count        : 0,
-                    count_thresh : 75,
-                    func         : ai_random
+                    count_thresh : 100,
+                    func         : ai_target_weak
                 }
             }];
 }
@@ -349,7 +347,7 @@ function init(nplanets) {
     planets[0].ntroops = 10;
 
     planets[1].player  = players[1];
-    planets[1].ntroops = 4;
+    planets[1].ntroops = 8;
 
     planets[2].player  = players[2];
     planets[2].ntroops = 8;
