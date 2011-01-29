@@ -101,9 +101,26 @@ function generate_planet() {
     };
 }
 
+
+function generate_players() {
+    return [{
+                name   : 'Agatha',
+                colour : 'rgba(128,128,255,0.5)'
+            },
+            {
+                name   : 'Bertha',
+                colour : 'rgba(128,255,128,0.5)'
+            },
+            {
+                name   : 'Mabel',
+                colour : 'rgba(255,128,128,0.5)'
+            }];
+}
+
+
 function update_stats(){
     var planets = game_state.planets;
-    for (i = 0;i < planets.length;i++){
+    for (var i = 0;i < planets.length;i++){
         var p = planets[i];
         if (p.player != null){
             p.health-=0.001*p.numtroops;
@@ -112,14 +129,41 @@ function update_stats(){
     }
 }
 
+
+function is_game_over() {
+    var has_human = false;
+    var has_ai    = false;
+
+    for (var i = 0; i < game_state.planets.length; i++) {
+        var p = game_state.planets[i].player;
+        if (p) {
+            if (p == game_state.human_player)
+                has_human = true;
+            else
+                has_ai = true;
+        }
+    }
+
+    if (has_human && has_ai) {
+        return { 'is_game_over' : false };
+    } else if (!has_human) {
+        return { 'is_game_over' : true, 'won' : false };
+    } else {
+        return { 'is_game_over' : true, 'won' : true };
+    }
+}
+
+
 function game_loop() {
     counter+=1;
     physics_step(game_state.planets, 1000/40.0 * 0.1);
     update_stats();
     if (counter > 75){
-
-        random_ai(1);
-        random_ai(2);
+        for (var i = 0; i < game_state.players.length; i++) {
+            var p = game_state.players[i];
+            if (p != game_state.human_player)
+                random_ai(p);
+        }
         counter=0;
     }
 
@@ -127,17 +171,16 @@ function game_loop() {
     ctx.globalCompositeOperation = 'source-in';
     ctx.fillStyle = 'rgba(0,0,0,0.95)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    var col = ['rgba(128,128,255,0.5)','rgba(128,255,128,0.5)','rgba(255,128,128,0.5)'];
 
     // dot drawing style
     ctx.globalCompositeOperation = 'lighter';
     ctx.fillStyle = 'rgba(128,128,128,0.5)';
 
-    for (i = 0; i < game_state.planets.length; i++) {
+    for (var i = 0; i < game_state.planets.length; i++) {
         var p = game_state.planets[i];
 
         if (p.player != null){
-            ctx.fillStyle = col[p.player];
+            ctx.fillStyle = p.player.colour;
             ctx.beginPath();
             var k = 0;
             if (p == game_state.active_planet){
@@ -175,6 +218,24 @@ function game_loop() {
             ctx.fillText(Math.floor(p.ntroops), p.position.e(1) - 5, p.position.e(2)+3);
         }
     }
+
+
+    var game_over = is_game_over();
+    if (game_over.is_game_over) {
+        var text;
+        if (game_over.won)
+            text = 'YOU HAVE WON!';
+        else
+            text = 'GAME OVER';
+
+        // Draw text
+        ctx.font         = 'bold 36px sans-serif';
+        ctx.fillStyle    = 'white';
+        ctx.textAlign    = 'center';
+        ctx.textBaseline = 'middle';
+
+        ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+    }
 }
 
 
@@ -186,27 +247,27 @@ function init(nplanets) {
     var supportsTouch = 'createTouch' in document;
     canvas[supportsTouch ? 'ontouchstart' : 'onmousedown'] = click;
 
+    var players = generate_players();
     var planets = new Array();
     for (var i = 0; i < nplanets; i++)
         planets.push(generate_planet());
 
-    planets[0].player = 0;
-    planets[1].player = 1;
-
+    planets[0].player  = players[0];
     planets[0].ntroops = 10;
+
+    planets[1].player  = players[1];
     planets[1].ntroops = 4;
 
-    planets[2].player = 2;
+    planets[2].player  = players[2];
     planets[2].ntroops = 8;
 
     game_state = {
         planets : planets,
-        players : [{}],
+        players : players,
         active_planet : null,
-        human_player : 0 ,
+        human_player : players[0],
         aura_pulse : 0
     };
-
 
     setInterval(game_loop, 40);
 }

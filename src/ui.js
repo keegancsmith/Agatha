@@ -1,4 +1,3 @@
-
 function getCursorPosition(e) {
     var x;
     var y;
@@ -21,6 +20,8 @@ function getCursorPosition(e) {
         'y' : y
     };
 }
+
+
 function click(e){
     var pos = getCursorPosition(e);
     var x = pos.x;
@@ -30,7 +31,11 @@ function click(e){
     if (game_state.active_planet != null){ // attack a planet
         if (p){
             // XXX battle() must check the distance
-            battle(game_state.active_planet , p);
+            if (can_battle(game_state.active_planet, p)) {
+                battle(game_state.active_planet, p);                
+            } else if (game_state.active_planet.player == p.player) {
+                game_state.active_planet = p;
+            }
         }
         else{
             game_state.active_planet = null;
@@ -55,10 +60,9 @@ function click(e){
 }
 
 
-
 // XXX only returns first planet which is close
 function get_planet(planets,x,y){
-    for (i=0;i < planets.length;i++){
+    for (var i=0;i < planets.length;i++){
         var plan = planets[i];
         var radius = plan.radius;
         var dist = $V([x,y]);

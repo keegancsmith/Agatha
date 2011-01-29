@@ -1,6 +1,6 @@
 physics_props = {
     max_acceleration : 100,
-    bounce_dampening : -0.5,
+    bounce_dampening : -0.75,
     max_velocity     : 1,
     collision_mult   : 1.5
 };
