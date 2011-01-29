@@ -61,12 +61,12 @@ function get_planet(planets,x,y){
     for (i=0;i < planets.length;i++){
         var plan = planets[i];
         var radius = plan.radius;
-        var dist = $V([x,y])
+        var dist = $V([x,y]);
         if (dist.subtract( plan.position ).modulus() < radius){
-            console.log('Planet clicked');
+            console.log('Planet clicked', plan.ntroops);
             return plan;
         }
     }
-            console.log('Space clicked');
+    console.log('Space clicked');
     return null;
 }
