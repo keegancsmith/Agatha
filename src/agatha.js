@@ -1,7 +1,6 @@
 var canvas;
 var ctx;
 var game_state;
-var counter;
 
 
 function can_battle(from_planet, to_planet) {
@@ -33,11 +32,12 @@ function battle(fromplan, toplan){
     if (toplan.player != null && toplan.player != fromplan.player){ // planet is occupied
         toplan.ntroops -= troops_sending;
 
-        if (toplan.ntroops == 0) {
-            toplan.player = null;
-        } else if (toplan.ntroops < 0) {
+        if (toplan.ntroops < 0) {
             toplan.player = fromplan.player;
             toplan.ntroops *= -1;
+        } else if (Math.floor(toplan.ntroops) == 0) {
+            toplan.ntroops = 0;
+            toplan.player = null;
         }
     }
     else { // planet is not occupied win by default
@@ -48,38 +48,70 @@ function battle(fromplan, toplan){
     //console.log(fromplan.ntroops, toplan.ntroops);
 }
 
-//
-// Ai strategies to implement:
-//      currently does never give troops to own base;
-//      a good strategy is to do this sometimes to make a planet which is strong enough to kill another really strong planet
-function random_ai(player){
-    var bases = new Array();
-    var targets = new Array();
+
+function ai_find_targets(player) {
+    var targets = [];
     var planets = game_state.planets;
-    for (var i =0;i < planets.length;i++){
-        if (planets[i].player == player){
-            bases.push(planets[i]);
+
+    for (var i = 0; i < planets.length; i++) {
+        var p1 = planets[i];
+
+        if (p1.player != player)
+            continue;
+
+        for (var j = 0; j < planets.length; j++) {
+            var p2 = planets[j];
+            if (p2.player != player && can_battle(p1, p2))
+                targets.push([p1, p2]);
         }
     }
-    //console.log('BASES:' + bases);
 
-    for (var j=0;j < bases.length;j++){
-        for (var k =0;k < planets.length;k++){
-            if (bases[j] == planets[k]){
-                continue;
-            }
+    return targets;
+}
 
-            if (can_battle(bases[j],planets[k])){
-                targets.push([j,k]);
-            }
-        }
-    }
+
+// Attack a random target
+function ai_random(player){
+    var targets = ai_find_targets(player);
+
     if (targets.length == 0)
-        return;
+        return false;
 
     // Choose who to attack randomnly
     var attack_choice = targets[Math.floor(Math.random()*targets.length)];
-    battle(bases[attack_choice[0]],planets[attack_choice[1]]);
+    battle(attack_choice[0], attack_choice[1]);
+
+    return true;
+}
+
+
+// Attack the target such that we maximise the troops left over after the attack
+function ai_target_weak(player) {
+    var targets = ai_find_targets(player);
+
+    if (targets.length == 0)
+        return false;
+
+    var target_wrap = [];
+    for (var i = 0; i < targets.length; i++) {
+        var from = targets[i][0];
+        var to   = targets[i][1];
+
+        var troops_staying = Math.floor(from.ntroops / 2);
+        var troops_sending = Math.floor(from.ntroops - troops_staying);
+
+        target_wrap.push([to.ntroops - troops_sending, -troops_staying, from, to]);
+    }
+
+    var smallest = target_wrap[0];
+    for (i = 1; i < target_wrap.length; i++)
+        if (target_wrap[i] < smallest)
+            smallest = target_wrap;
+
+    console.log(smallest);
+    battle(smallest[2], smallest[3]);
+
+    return true;
 }
 
 
@@ -104,17 +136,42 @@ function generate_planet() {
 
 function generate_players() {
     return [{
-                name   : 'Agatha',
-                colour : 'rgba(128,128,255,0.5)'
+                name     : 'Agatha',
+                colour   : 'rgba(128,128,255,0.5)'
             },
             {
-                name   : 'Bertha',
-                colour : 'rgba(128,255,128,0.5)'
+                name     : 'Bertha',
+                colour   : 'rgba(128,255,128,0.5)',
+                ai       : {
+                    count        : 0,
+                    count_thresh : 75,
+                    func         : ai_target_weak
+                }
             },
             {
-                name   : 'Mabel',
-                colour : 'rgba(255,128,128,0.5)'
+                name     : 'Mabel',
+                colour   : 'rgba(255,128,128,0.5)',
+                ai       : {
+                    count        : 0,
+                    count_thresh : 75,
+                    func         : ai_random
+                }
             }];
+}
+
+
+function do_ai() {
+    for (var i = 0; i < game_state.players.length; i++) {
+        var p = game_state.players[i];
+        if (p == game_state.human_player)
+            continue;
+
+        p.ai.count++;
+        if (p.ai.count > p.ai.count_thresh) {
+            if (p.ai.func(p))
+                p.ai.count = 0;
+        }
+    }
 }
 
 
@@ -155,17 +212,17 @@ function is_game_over() {
 
 
 function game_loop() {
-    counter+=1;
     physics_step(game_state.planets, 1000/40.0 * 0.1);
     update_stats();
-    if (counter > 75){
-        for (var i = 0; i < game_state.players.length; i++) {
-            var p = game_state.players[i];
-            if (p != game_state.human_player)
-                random_ai(p);
-        }
-        counter=0;
-    }
+    do_ai();
+
+    // AI can take over your active planet
+    if (game_state.active_planet && game_state.active_planet.player != game_state.human_player)
+        game_state.active_planet = null;
+
+    // text properties
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'middle';
 
     // fading
     ctx.globalCompositeOperation = 'source-in';
@@ -215,7 +272,7 @@ function game_loop() {
 
 //        ctx.font = "bold 12px sans-serif";
         if (p.player != null){
-            ctx.fillText(Math.floor(p.ntroops), p.position.e(1) - 5, p.position.e(2)+3);
+            ctx.fillText(Math.floor(p.ntroops), p.position.e(1), p.position.e(2));
         }
     }
 
@@ -231,8 +288,6 @@ function game_loop() {
         // Draw text
         ctx.font         = 'bold 36px sans-serif';
         ctx.fillStyle    = 'white';
-        ctx.textAlign    = 'center';
-        ctx.textBaseline = 'middle';
 
         ctx.fillText(text, canvas.width / 2, canvas.height / 2);
     }
@@ -242,7 +297,6 @@ function game_loop() {
 function init(nplanets) {
     canvas = document.getElementById('canvas');
     ctx = canvas.getContext('2d');
-    counter = 0;
 
     var supportsTouch = 'createTouch' in document;
     canvas[supportsTouch ? 'ontouchstart' : 'onmousedown'] = click;
@@ -264,7 +318,7 @@ function init(nplanets) {
     game_state = {
         planets : planets,
         players : players,
-        active_planet : null,
+        active_planet : planets[0],
         human_player : players[0],
         aura_pulse : 0
     };
