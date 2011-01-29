@@ -26,13 +26,13 @@ function click(e){
     var pos = getCursorPosition(e);
     var x = pos.x;
     var y = pos.y;
-    var p = get_planet(game_state.planets,x,y);
+    var p = find_closest_planet(game_state.planets, x, y);
 
     if (game_state.active_planet != null){ // attack a planet
         if (p){
             // XXX battle() must check the distance
             if (can_battle(game_state.active_planet, p)) {
-                battle(game_state.active_planet, p);                
+                battle(game_state.active_planet, p);
             } else if (game_state.active_planet.player == p.player) {
                 game_state.active_planet = p;
             }
@@ -60,17 +60,19 @@ function click(e){
 }
 
 
-// XXX only returns first planet which is close
-function get_planet(planets,x,y){
-    for (var i=0;i < planets.length;i++){
-        var plan = planets[i];
-        var radius = plan.radius;
-        var dist = $V([x,y]);
-        if (dist.subtract( plan.position ).modulus() < radius){
-            console.log('Planet clicked', plan);
-            return plan;
-        }
+function find_closest_planet(planets, x, y){
+    var v = $V([x, y]);
+    var closest_planet = [2 * canvas.width, null];
+
+    for (var i = 0; i < planets.length; i++){
+        var p = planets[i];
+        var d = v.distanceFrom(p.position) - p.radius;
+        if ([d, p] < closest_planet)
+            closest_planet = [d, p];
     }
-    console.log('Space clicked');
-    return null;
+
+    if (closest_planet[0] < 100)
+        return closest_planet[1];
+    else
+        return null;
 }
