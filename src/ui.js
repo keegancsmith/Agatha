@@ -21,8 +21,18 @@ function getCursorPosition(e) {
     };
 }
 
+function keydown(e){
+    console.log("Keydown");
+    game_state.active_planet = null;
 
+}
 function click(e){
+    if (game_state.game_over){
+       clearInterval(game_state.main_game_int); 
+       init(15);
+       //var hs = setInterval(blah,40);
+       //home_state.home_int = hs;
+    }
     var pos = getCursorPosition(e);
     var x = pos.x;
     var y = pos.y;
@@ -87,9 +97,16 @@ function homeClick(e){
             clearInterval(home_state.home_int);
             startGame();
         }
+        else if (home_state.selected == 'guide' ) {
+            home_state.current = 'guide';
+        }
+        else if (home_state.selected == 'about'){
+            home_state.current = 'about';
+        }
 
     }
     else{
+        home_state.current = 'home';
     }
 }
 function homeMove(e){

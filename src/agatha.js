@@ -344,6 +344,7 @@ function game_loop() {
 
     var game_over = is_game_over();
     if (game_over.is_game_over) {
+        game_state.game_over = true;
         var text;
         if (game_over.won)
             text = 'YOU HAVE WON!';
@@ -360,7 +361,7 @@ function game_loop() {
 }
 function startGame(){
 
-    nplanets = 10; // XXX XXX temp
+    nplanets = 15; // XXX XXX temp
     var supportsTouch = 'createTouch' in document;
     canvas[supportsTouch ? 'ontouchstart' : 'onmousedown'] = click;
 
@@ -387,10 +388,12 @@ function startGame(){
         active_planet : planets[0],
         human_player : players[0],
         animations : [],
-        aura_pulse : 0
+        aura_pulse : 0,
+        game_over : false
     };
 
-    setInterval(game_loop, 40);
+    main_game_int = setInterval(game_loop, 40);
+    game_state.main_game_int = main_game_int;
 }
 function blah(){
     var hoff = 30;
@@ -399,45 +402,54 @@ function blah(){
     ctx.globalCompositeOperation = 'source-over';
     ctx.fillStyle = 'rgba(0,0,0,1)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+    if (home_state.current == 'home'){
+        ctx.drawImage(agatha_image, 150 ,10,300,300*ratio);
+        ctx.drawImage(play_image,230,50+hoff);
 
-    ctx.drawImage(agatha_image, 150 ,10,300,300*ratio);
-    ctx.drawImage(play_image,230,50+hoff);
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.drawImage(guide_image,240,90+hoff);
+        ctx.drawImage(about_image,240,120+ hoff);
+        ctx.drawImage(mars_image,120,200);
 
-    ctx.globalCompositeOperation = 'source-over';
-    ctx.drawImage(guide_image,240,90+hoff);
-    ctx.drawImage(about_image,240,120+ hoff);
-    ctx.drawImage(mars_image,120,200);
-
-    if (home_state.selected){
-        var col_offset;
-        var col_w = 0;
-        if (home_state.selected == 'play'){
-            col_offset=0;
-            col_w=43;
+        if (home_state.selected){
+            var col_offset;
+            var col_w = 0;
+            if (home_state.selected == 'play'){
+                col_offset=0;
+                col_w=43;
+            }
+            else if (home_state.selected == 'guide') {
+                col_offset=45;
+                col_w=30;
+            }
+            else if (home_state.selected == 'about') {
+                col_offset=70;
+                col_w=38;
+            }
+            ctx.globalCompositeOperation = 'darker';
+            ctx.fillStyle = 'rgba(150,0,0,0.5)';
+            ctx.fillRect(230,80+col_offset, 140, col_w );
         }
-        else if (home_state.selected == 'guide') {
-            col_offset=45;
-            col_w=30;
-        }
-        else if (home_state.selected == 'about') {
-            col_offset=70;
-            col_w=38;
-        }
-        ctx.globalCompositeOperation = 'darker';
-        ctx.fillStyle = 'rgba(150,0,0,0.5)';
-        ctx.fillRect(230,80+col_offset, 140, col_w );
+    }
+    else if (home_state.current == 'guide'){
+        ctx.drawImage(guide_screen_image,10,0);
+    }
+    else if (home_state.current == 'about'){
+        ctx.drawImage(about_screen_image,10,0);
     }
 
-    console.log(home_state.selected);
 }
 
 function init(nplanets) {
     canvas = document.getElementById('canvas');
     ctx = canvas.getContext('2d');
+    window.addEventListener('keydown',keydown,true);
 
     var supportsTouch = 'createTouch' in document;
     canvas[supportsTouch ? 'ontouchstart' : 'onmousedown'] = homeClick;
     canvas[supportsTouch ? 'ontouchmove' : 'onmousemove']  = homeMove;
+    //canvas['onkeydown'] = keydown;
+    //canvas['onkeypress'] = keydown;
     start_game = false;
     
 
@@ -455,13 +467,17 @@ function init(nplanets) {
     about_image = new Image();
     mars_image = new Image();
     agatha_image = new Image();
+    guide_screen_image = new Image();
+    about_screen_image = new Image();
     
 
     play_image.src = "images/play.png";
     guide_image.src = "images/guide.png";
     about_image.src = "images/about.png";
     mars_image.src = "images/Mars.jpg";
-    agatha_image.src = "images/agatha.png"
+    agatha_image.src = "images/agatha.png";
+    guide_screen_image.src = "images/guide_screen.png";
+    about_screen_image.src = "images/about_screen.png";
     
 
     console.log(play_image);
