@@ -362,7 +362,7 @@ function game_loop() {
 }
 function startGame(){
 
-    nplanets = 50; // XXX XXX temp
+    nplanets = 10; // XXX XXX temp
     var supportsTouch = 'createTouch' in document;
     canvas[supportsTouch ? 'ontouchstart' : 'onmousedown'] = click;
 
