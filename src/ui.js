@@ -106,6 +106,10 @@ function homeClick(e){
 
     }
     else if (home_state.current == 'play'){
+        if (home_state.selected != null){
+            clearInterval(home_state.home_int);
+            startGame(home_state.selected);
+        }
     }
     else{
         home_state.current = 'home';
