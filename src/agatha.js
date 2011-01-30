@@ -151,8 +151,15 @@ function ai_target_weak(player) {
 
 
 function play_sound(s) {
-    var snd = new Audio('snd/' + s + '.mp3');
-    snd.play();
+    if (s == 'getplanet'){
+        game_state.snd_gp.play();
+    }
+    else if (s == 'loseplanet'){
+        game_state.snd_lp.play();
+    }
+    else if (s == 'sendtroops'){
+        game_state.snd_st.play();
+    }
 }
 
 
@@ -355,7 +362,7 @@ function game_loop() {
 }
 function startGame(){
 
-    nplanets = 15; // XXX XXX temp
+    nplanets = 50; // XXX XXX temp
     var supportsTouch = 'createTouch' in document;
     canvas[supportsTouch ? 'ontouchstart' : 'onmousedown'] = click;
 
@@ -376,6 +383,10 @@ function startGame(){
     plan_image = new Image();
     plan_image.src = "images/planet3.png";
 
+    var snd_gp = new Audio('snd/getplanet.mp3');
+    var snd_lp = new Audio('snd/loseplanet.mp3');
+    var snd_st = new Audio('snd/sendtroops.mp3');
+
     game_state = {
         planets : planets,
         players : players,
@@ -383,7 +394,10 @@ function startGame(){
         human_player : players[0],
         animations : [],
         aura_pulse : 0,
-        game_over : false
+        game_over : false,
+        snd_gp: snd_gp,
+        snd_lp : snd_lp,
+        snd_st : snd_st
     };
 
     main_game_int = setInterval(game_loop, 40);
