@@ -478,6 +478,28 @@ function blah(){
     else if (home_state.current == 'about'){
         ctx.drawImage(about_screen_image,10,0);
     }
+    else if (home_state.current == 'play'){
+        ctx.drawImage(play_screen_image,10,0);
+        var ty =  0;
+
+        if (home_state.selected != null){
+            var ph = 34;
+            var pw = 200;
+            if (home_state.selected == 'easy'){
+                ty=322;
+            }
+            else if (home_state.selected == 'medium'){
+                ty=371;
+            }
+            else if (home_state.selected == 'hard'){
+                ty=420;
+            }
+            ctx.globalCompositeOperation = 'darker';
+            ctx.fillStyle = 'rgba(150,0,0,0.5)';
+            ctx.fillRect(157,ty, pw, ph );
+        }
+    }
+   // console.log ("Current , selected: " + home_state.current + " " + home_state.selected);
 
 }
 
@@ -511,7 +533,7 @@ function init() {
     agatha_image = new Image();
     guide_screen_image = new Image();
     about_screen_image = new Image();
-
+    play_screen_image = new Image();
 
     play_image.src = "images/play.png";
     guide_image.src = "images/guide.png";
@@ -520,6 +542,8 @@ function init() {
     agatha_image.src = "images/agatha.png";
     guide_screen_image.src = "images/guide_screen.png";
     about_screen_image.src = "images/about_screen.png";
+    play_screen_image.src = "images/play_screen.png";
+    
 
     var home_int = setInterval(blah,40);
     home_state.home_int = home_int;
