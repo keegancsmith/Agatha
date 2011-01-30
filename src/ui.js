@@ -22,10 +22,9 @@ function getCursorPosition(e) {
 }
 
 function keydown(e){
-    console.log("Keydown");
     game_state.active_planet = null;
-
 }
+
 function click(e){
     if (game_state.game_over){
        clearInterval(game_state.main_game_int); 
@@ -53,14 +52,11 @@ function click(e){
     }
     else{ // select a planet
         if (p == null){
-            console.log('Cant select empty space');
             return;
         }
         if (p.player == null){ // No player,  invalid move
-            console.log('You cant select an empty planet');
         }
         else if (p.player != game_state.human_player){ // enemy player, invalid move
-            console.log('You cant select an enemy');
         }
         else if (p.player == game_state.human_player){ // good move
             game_state.active_planet = p;

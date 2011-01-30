@@ -499,8 +499,6 @@ function blah(){
             ctx.fillRect(157,ty, pw, ph );
         }
     }
-   // console.log ("Current , selected: " + home_state.current + " " + home_state.selected);
-
 }
 
 

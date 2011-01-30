@@ -15,42 +15,25 @@ canvas {
 }
 #wrapper {
     width: 600px;
+    margin-top: 50px;
+    margin-bottom: 50px;
     margin-left: auto;
     margin-right: auto;
 }
 body{
    background-color: #222;
    color: white;
-   width: 100%;
 };
     </style>
-<script type="text/javascript">
-<!--
-    function toggle_visibility(id) {
-       var e = document.getElementById(id);
-       if(e.style.display == 'block')
-          e.style.display = 'none';
-       else
-          e.style.display = 'block';
-    }
-//-->
-</script>
   </head>
   <body>
-    <p id="dbg"></p>
-    <p style="float: right; margin: -50px 0px 0px 0px"><a style="color: white" href="javascript:toggle_visibility('instructions');">Help</a></p>
-    <ul id="instructions" style="display: none">
-      <li>You are the pulsating planet</li>
-      <li>The selected planet pulsates</li>
-      <li>Your planet's are coloured purple</li>
-      <li>When planets are close enough to the selected planet, you can send
-        troops to them. This will send half of the selected planets troops to
-        the planet</li>
-      <li>Objective: Make the other populations extinct</li>
-    </ul>
     <div id="wrapper" >
         <canvas id="canvas" width="600" height="600"></canvas>
     </div>
+    <p style="text-align: right">
+      <a href="https://bitbucket.org/keegan_csmith/agatha">[SRC]</a>
+      <a href="http://globalgamejam.org/2011/agatha">[GGJ]</a>
+    </p>
     <script>
       init();
     </script>
