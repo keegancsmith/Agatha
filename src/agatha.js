@@ -248,30 +248,23 @@ function draw_planet(p) {
     }
 
     if (p == game_state.active_planet){
-        ctx.fillStyle = 'rgba(255,128,128,0.5)';
         ctx.beginPath();
         ctx.arc(p.position.e(1),p.position.e(2), p.travel_radius + p.radius, 0, 2*Math.PI, false);
         ctx.stroke();
 
         // colour the path
     } else if (game_state.active_planet && can_battle(game_state.active_planet, p)) {
+        ctx.beginPath();
         ctx.fillStyle = 'rgba(0,128,128,0.5)';
         ctx.moveTo(p.position.e(1),p.position.e(2));
         ctx.lineTo(game_state.active_planet.position.e(1),game_state.active_planet.position.e(2));
-        ctx.strokeStyle = "#eee";
         ctx.stroke();
     } else {
         ctx.fillStyle = 'rgba(128,128,128,0.5)';
     }
-  /*  ctx.beginPath();
-    ctx.arc(p.position.e(1), p.position.e(2), p.radius, 0, Math.PI*2, false);
-    ctx.fill();*/
+
     var offset = Math.floor ( Math.sqrt ( 2 * p.radius * p.radius) );
     ctx.drawImage(plan_image, p.position.e(1)-p.radius , p.position.e(2) - p.radius ,2*p.radius,2*p.radius);
-
-    if (p.player != null) {
-        ctx.fillText(Math.floor(p.ntroops), p.position.e(1), p.position.e(2));
-    }
 }
 
 
@@ -336,6 +329,7 @@ function game_loop() {
     // dot drawing style
     ctx.globalCompositeOperation = 'source-over';
     ctx.fillStyle = 'rgba(128,128,128,0.5)';
+    ctx.strokeStyle = "#eee";
 
     // Draw scene
     draw_animations();
