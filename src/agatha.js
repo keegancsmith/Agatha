@@ -4,6 +4,25 @@ var game_state;
 var plan_image;
 
 
+var difficulty_levels = {
+    'easy' : {
+        'nstupid'  : 1,
+        'nhard'    : 0,
+        'nplanets' : 8
+    },
+    'medium' : {
+        'nstupid'  : 0,
+        'nhard'    : 2,
+        'nplanets' : 10
+    },
+    'hard' : {
+        'nstupid'  : 0,
+        'nhard'    : 2,
+        'nplanets' : 15
+    }
+};
+
+
 function battle_animation(from_planet, to_planet, colour) {
     var p1      = from_planet;
     var p2      = to_planet;
@@ -182,29 +201,43 @@ function generate_planet() {
 }
 
 
-function generate_players() {
-    return [{
-                name     : 'Agatha',
-                colour   : 'rgba(128,128,255,0.5)'
-            },
-            {
-                name     : 'Bertha',
-                colour   : 'rgba(128,255,128,0.5)',
-                ai       : {
-                    count        : 0,
-                    count_thresh : 40,
-                    func         : ai_target_weak
-                }
-            },
-            {
-                name     : 'Mabel',
-                colour   : 'rgba(255,128,128,0.5)',
-                ai       : {
-                    count        : 0,
-                    count_thresh : 40,
-                    func         : ai_target_weak
-                }
-            }];
+function generate_players(difficulty) {
+    var colours = ['rgba(128,255,128,0.5)', 'rgba(255,128,128,0.5)'];
+    var names   = ['Bertha', 'Mabel'];
+
+    var human = {
+        name     : 'Agatha',
+        colour   : 'rgba(128,128,255,0.5)'
+    };
+
+    var players = [human];
+    var k = 0;
+    for (var i = 0; i < difficulty_levels[difficulty].nstupid; i++) {
+        players.push({
+                         name   : names[k],
+                         colour : colours[k],
+                         ai     : {
+                             count        : 0,
+                             count_thresh : 100,
+                             func         : ai_random
+                         }
+                     });
+        k++;
+    }
+    for (i = 0; i < difficulty_levels[difficulty].nhard; i++) {
+        players.push({
+                         name   : names[k],
+                         colour : colours[k],
+                         ai     : {
+                             count        : 0,
+                             count_thresh : 40,
+                             func         : ai_target_weak
+                         }
+                     });
+        k++;
+    }
+
+    return players;
 }
 
 
@@ -360,25 +393,23 @@ function game_loop() {
         ctx.restore();
     }
 }
-function startGame(){
 
-    nplanets = 10; // XXX XXX temp
+
+function startGame(difficulty) {
+    var nplanets = difficulty_levels[difficulty].nplanets;
     var supportsTouch = 'createTouch' in document;
     canvas[supportsTouch ? 'ontouchstart' : 'onmousedown'] = click;
 
-    var players = generate_players();
+    var players = generate_players(difficulty);
     var planets = new Array();
     for (var i = 0; i < nplanets; i++)
         planets.push(generate_planet());
 
-    planets[0].player  = players[0];
+    for (i = 0; i < players.length; i++) {
+        planets[i].player  = players[i];
+        planets[i].ntroops = 8;
+    }
     planets[0].ntroops = 10;
-
-    planets[1].player  = players[1];
-    planets[1].ntroops = 8;
-
-    planets[2].player  = players[2];
-    planets[2].ntroops = 8;
 
     plan_image = new Image();
     plan_image.src = "images/planet3.png";
@@ -403,6 +434,8 @@ function startGame(){
     main_game_int = setInterval(game_loop, 40);
     game_state.main_game_int = main_game_int;
 }
+
+
 function blah(){
     var hoff = 30;
     var ratio = 36/144;
@@ -448,7 +481,8 @@ function blah(){
 
 }
 
-function init(nplanets) {
+
+function init() {
     canvas = document.getElementById('canvas');
     ctx = canvas.getContext('2d');
     window.addEventListener('keydown',keydown,true);
@@ -459,7 +493,7 @@ function init(nplanets) {
     //canvas['onkeydown'] = keydown;
     //canvas['onkeypress'] = keydown;
     start_game = false;
-    
+
 
     home_state = {
         current: 'home', // others, guide, about
@@ -477,7 +511,7 @@ function init(nplanets) {
     agatha_image = new Image();
     guide_screen_image = new Image();
     about_screen_image = new Image();
-    
+
 
     play_image.src = "images/play.png";
     guide_image.src = "images/guide.png";
@@ -486,17 +520,7 @@ function init(nplanets) {
     agatha_image.src = "images/agatha.png";
     guide_screen_image.src = "images/guide_screen.png";
     about_screen_image.src = "images/about_screen.png";
-    
 
-    console.log(play_image);
     var home_int = setInterval(blah,40);
     home_state.home_int = home_int;
-
-    //setInterval(home_loop,40);
-
-
-
-
-
-
 }

@@ -95,7 +95,7 @@ function homeClick(e){
     if (home_state.current == 'home'){
         if (home_state.selected == 'play'){
             clearInterval(home_state.home_int);
-            startGame();
+            startGame('medium');
         }
         else if (home_state.selected == 'guide' ) {
             home_state.current = 'guide';
