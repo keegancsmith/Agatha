@@ -360,9 +360,8 @@ function game_loop() {
         ctx.restore();
     }
 }
-function startGame(){
+function startGame(nplanets,n_ai){
 
-    nplanets = 10; // XXX XXX temp
     var supportsTouch = 'createTouch' in document;
     canvas[supportsTouch ? 'ontouchstart' : 'onmousedown'] = click;
 
@@ -445,10 +444,32 @@ function blah(){
     else if (home_state.current == 'about'){
         ctx.drawImage(about_screen_image,10,0);
     }
+    else if (home_state.current == 'play'){
+        ctx.drawImage(play_screen_image,10,0);
+        var ty =  0;
+
+        if (home_state.selected != null){
+            var ph = 34;
+            var pw = 200;
+            if (home_state.selected == 'easy'){
+                ty=322;
+            }
+            else if (home_state.selected == 'medium'){
+                ty=371;
+            }
+            else if (home_state.selected == 'hard'){
+                ty=420;
+            }
+            ctx.globalCompositeOperation = 'darker';
+            ctx.fillStyle = 'rgba(150,0,0,0.5)';
+            ctx.fillRect(157,ty, pw, ph );
+        }
+    }
+   // console.log ("Current , selected: " + home_state.current + " " + home_state.selected);
 
 }
 
-function init(nplanets) {
+function init() {
     canvas = document.getElementById('canvas');
     ctx = canvas.getContext('2d');
     window.addEventListener('keydown',keydown,true);
@@ -477,6 +498,7 @@ function init(nplanets) {
     agatha_image = new Image();
     guide_screen_image = new Image();
     about_screen_image = new Image();
+    play_screen_image = new Image();
     
 
     play_image.src = "images/play.png";
@@ -486,6 +508,7 @@ function init(nplanets) {
     agatha_image.src = "images/agatha.png";
     guide_screen_image.src = "images/guide_screen.png";
     about_screen_image.src = "images/about_screen.png";
+    play_screen_image.src = "images/play_screen.png";
     
 
     console.log(play_image);
@@ -493,10 +516,5 @@ function init(nplanets) {
     home_state.home_int = home_int;
 
     //setInterval(home_loop,40);
-
-
-
-
-
 
 }

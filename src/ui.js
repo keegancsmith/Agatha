@@ -94,8 +94,10 @@ function homeClick(e){
     var pos = getCursorPosition(e);
     if (home_state.current == 'home'){
         if (home_state.selected == 'play'){
-            clearInterval(home_state.home_int);
-            startGame();
+            home_state.current = 'play';
+            home_state.selected = null;
+            //clearInterval(home_state.home_int);
+            //startGame(10,3);
         }
         else if (home_state.selected == 'guide' ) {
             home_state.current = 'guide';
@@ -105,27 +107,50 @@ function homeClick(e){
         }
 
     }
+    else if (home_state.current == 'play'){
+    }
     else{
         home_state.current = 'home';
     }
 }
 function homeMove(e){
     var pos = getCursorPosition(e);
-    if (pos.x > 230 && pos.x < (230 + 140)){
-        if (pos.y > 80 && pos.y < (80+53)){
-            home_state.selected = 'play';
+    if (home_state.current == 'home'){
+        if (pos.x > 230 && pos.x < (230 + 140)){
+            if (pos.y > 80 && pos.y < (80+53)){
+                home_state.selected = 'play';
+            }
+            else if (pos.y > 120 && pos.y < (120+36)){
+                home_state.selected = 'guide';
+            }
+            else if (pos.y > 150 && pos.y < 186){
+                home_state.selected = 'about';
+            }
+            else{
+                home_state.selected = null;
+            }
         }
-        else if (pos.y > 120 && pos.y < (120+36)){
-            home_state.selected = 'guide';
+        else{
+                home_state.selected = null;
         }
-        else if (pos.y > 150 && pos.y < 186){
-            home_state.selected = 'about';
+    }
+    else if (home_state.current == 'play'){
+        if (pos.x > 150 && pos.x < 350){
+            if (pos.y > 319 && pos.y < 360){
+                home_state.selected = 'easy';
+            }
+            else if (pos.y > 370 && pos.y < 410){
+                home_state.selected = 'medium';
+            }
+            else if (pos.y > 420 && pos.y < 460){
+                home_state.selected = 'hard';
+            }
+            else{
+                home_state.selected = null;
+            }
         }
         else{
             home_state.selected = null;
         }
-    }
-    else{
-            home_state.selected = null;
     }
 }
